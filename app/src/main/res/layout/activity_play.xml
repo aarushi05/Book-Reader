@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PlayActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6"
+            android:src="@drawable/image"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:progressTint="#000000" />
+
+        <Button
+            android:id="@+id/button"
+            android:textStyle="bold"
+            android:background="@color/select_button"
+            android:layout_marginLeft="130dp"
+            android:layout_marginBottom="30dp"
+            android:textAlignment="center"
+            android:layout_width="150dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.08"
+            android:text="Play/Pause" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
