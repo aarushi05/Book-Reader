@@ -11,10 +11,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import org.w3c.dom.Text;
 
@@ -34,11 +38,16 @@ public class SelectActivity extends AppCompatActivity implements ItemFragment.On
     TextToSpeech mtts;
     private RecyclerView.Adapter recyclerViewAdapter;
     private RecyclerView recyclerView;
+    LinearLayout progressBar;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
+
+        progressBar = (LinearLayout) findViewById(R.id.progress_bar);
+        handler = new Handler();
 
         if (recyclerViewAdapter == null) {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
@@ -61,10 +70,11 @@ public class SelectActivity extends AppCompatActivity implements ItemFragment.On
     }
 
     protected File getFileFromUri(Uri uri){
-        //urifile:///storage/emulated/0/Android/data/com.example.bookreader/files/Pictures/JPEG_20200407_8179335626432330184.jpg
+        //uriFile:///storage/emulated/0/Android/data/com.example.bookreader/files/Pictures/JPEG_20200407_8179335626432330184.jpg
         String[] split = uri.toString().split("/");
         String filename = split[split.length - 1];
-        File file = new File(Environment.DIRECTORY_PICTURES,filename);
+        File storage = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file = new File(storage,filename);
         return file;
     }
 
@@ -80,7 +90,6 @@ public class SelectActivity extends AppCompatActivity implements ItemFragment.On
             OcrDetectorProcessor ocrText= new OcrDetectorProcessor(getApplicationContext(),bitmap);
             String text= ocrText.getOcrText();
             Log.d(TAG,"text " + text);
-            //text = "hi i am aarushi this is dummy text just to check the text file converted to audio and audio file playing in the audio player correctly or not file should be of maximum length so that audio file is of maximum length so that seekbar can be checked by progress and audio playing can be done backward or forward i hope this works now and media player get prepared properly pls dont give errors now for media player preparing failed or ocr failed or whatever";
             writer.append(text);
             writer.flush();
             writer.close();
@@ -91,7 +100,7 @@ public class SelectActivity extends AppCompatActivity implements ItemFragment.On
 
     StringBuffer buffer;
     protected void getTextToAudio(){
-        final String mUtteranceID = "totts";
+        final String mUtteranceID = "toTts";
         File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File textFile = new File(path,"image_to_text.txt");
         try {
@@ -122,11 +131,17 @@ public class SelectActivity extends AppCompatActivity implements ItemFragment.On
 
     @Override
     public void onListFragmentInteraction(PictureItem item) {
+        progressBar.setVisibility(View.VISIBLE);
+        handler.post(()->{
             Uri uri = item.uri;
             File file = getFileFromUri(uri);
             getImageToText(file);
             getTextToAudio();
-            Intent intent = new Intent(getApplicationContext(),PlayActivity.class);
-            startActivity(intent);
+            runOnUiThread(()-> {
+                progressBar.setVisibility(View.INVISIBLE);
+                Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                startActivity(intent);
+            });
+            });
     }
 }
